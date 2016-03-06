@@ -1,0 +1,166 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>T03b Advanced Loading Models</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-05"><meta name="DC.source" content="T03b_Loading_Models_Advanced.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>T03b Advanced Loading Models</h1><!--introduction--><p>Load various SBML and SimBiology models</p><p>Important Note: Remember to call FinalizeModel after loading and before   running kroneckerbio analysis functions.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Simple model</a></li><li><a href="#2">More complicated model</a></li><li><a href="#3">Simple mass action model</a></li><li><a href="#4">Bigger mass action model</a></li><li><a href="#5">Load SimBiology model</a></li></ul></div><h2>Simple model<a name="1"></a></h2><pre class="codeinput">current_path = fileparts(mfilename(<span class="string">'fullpath'</span>));
+opts = [];
+opts.Verbose = 0;
+m1 = LoadModelSbmlAnalytic(fullfile(current_path, <span class="string">'../Testing/enzyme-catalysis-basic.xml'</span>), opts);
+m1 = FinalizeModel(m1);
+</pre><h2>More complicated model<a name="2"></a></h2><pre class="codeinput">opts.ICsAsSeeds = true;
+m2 = LoadModelSbmlAnalytic(fullfile(current_path, <span class="string">'Brown_EGFNGF.xml'</span>), opts);
+
+<span class="comment">% Add test outputs</span>
+<span class="comment">%   Note that outputs always use Names, not IDs since they are always added by</span>
+<span class="comment">%   the user independent of SBML</span>
+m2 = AddOutput(m2, <span class="string">'Out1'</span>, <span class="string">'("RasGapActive" + kSos*RapGapActive)/2 + sqrt(AktActive)^(kRap1ToBRaf)'</span>);
+m2 = AddOutput(m2, <span class="string">'Out2'</span>, <span class="string">'EGF + 2*NGF'</span>);
+m2 = FinalizeModel(m2, opts);
+</pre><h2>Simple mass action model<a name="3"></a></h2><pre class="codeinput">opts = [];
+opts.Verbose = 0;
+m3 = LoadModelSbmlMassAction(fullfile(current_path, <span class="string">'../Testing/simple_massaction.xml'</span>), opts);
+m3 = FinalizeModel(m3);
+<span class="comment">% m3 = LoadModelSbmlAnalytic(fullfile(current_path, '../Testing/simple_massaction.xml'), opts);</span>
+<span class="comment">% m3 = FinalizeModel(m3, opts);</span>
+</pre><pre class="codeoutput">Warning: Repeated species names found: C, C 
+</pre><h2>Bigger mass action model<a name="4"></a></h2><p>Warning: loading as a massaction model is slow</p><p>Note: When using libSBML's Matlab bindings TranslateSBML, an interactive prompt will appear asking whether to discard warnings. These prompts will be suppressed for opts.Verbose &lt;= 1, which is useful for scripts.</p><pre class="codeinput">opts = [];
+opts.Verbose = 0;
+m4 = LoadModelSbmlAnalytic(fullfile(current_path, <span class="string">'Chen2009_ErbB_A431.xml'</span>), opts);
+m4 = FinalizeModel(m4, opts);
+<span class="comment">% m4 = LoadModelSbmlMassAction(fullfile(current_path, 'Chen2009_ErbB_A431.xml'), opts);</span>
+<span class="comment">% m4 = FinalizeModel(m4);</span>
+</pre><h2>Load SimBiology model<a name="5"></a></h2><pre class="codeinput">load(fullfile(current_path, <span class="string">'../Testing/simple_massaction_simbio_model.mat'</span>))
+
+<span class="comment">% Test SimBio -&gt; analytic model</span>
+m5 = LoadModelSimBioAnalytic(simbiomodel);
+m5 = FinalizeModel(m5);
+
+<span class="comment">% Test SimBio -&gt; massaction model</span>
+m6 = LoadModelSimBioMassAction(simbiomodel);
+m6 = FinalizeModel(m5);
+</pre><pre class="codeoutput">Warning: Repeated species names found: C, C 
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% T03b Advanced Loading Models
+% Load various SBML and SimBiology models
+%
+% Important Note: Remember to call FinalizeModel after loading and before
+%   running kroneckerbio analysis functions.
+
+%% Simple model
+current_path = fileparts(mfilename('fullpath'));
+opts = [];
+opts.Verbose = 0;
+m1 = LoadModelSbmlAnalytic(fullfile(current_path, '../Testing/enzyme-catalysis-basic.xml'), opts);
+m1 = FinalizeModel(m1);
+
+%% More complicated model
+opts.ICsAsSeeds = true;
+m2 = LoadModelSbmlAnalytic(fullfile(current_path, 'Brown_EGFNGF.xml'), opts);
+
+% Add test outputs
+%   Note that outputs always use Names, not IDs since they are always added by
+%   the user independent of SBML
+m2 = AddOutput(m2, 'Out1', '("RasGapActive" + kSos*RapGapActive)/2 + sqrt(AktActive)^(kRap1ToBRaf)');
+m2 = AddOutput(m2, 'Out2', 'EGF + 2*NGF');
+m2 = FinalizeModel(m2, opts);
+
+%% Simple mass action model
+opts = [];
+opts.Verbose = 0;
+m3 = LoadModelSbmlMassAction(fullfile(current_path, '../Testing/simple_massaction.xml'), opts);
+m3 = FinalizeModel(m3);
+% m3 = LoadModelSbmlAnalytic(fullfile(current_path, '../Testing/simple_massaction.xml'), opts);
+% m3 = FinalizeModel(m3, opts);
+
+%% Bigger mass action model
+% Warning: loading as a massaction model is slow
+%
+% Note: When using libSBML's Matlab bindings TranslateSBML, an interactive
+% prompt will appear asking whether to discard warnings. These prompts will
+% be suppressed for opts.Verbose <= 1, which is useful for scripts.
+opts = [];
+opts.Verbose = 0;
+m4 = LoadModelSbmlAnalytic(fullfile(current_path, 'Chen2009_ErbB_A431.xml'), opts);
+m4 = FinalizeModel(m4, opts);
+% m4 = LoadModelSbmlMassAction(fullfile(current_path, 'Chen2009_ErbB_A431.xml'), opts);
+% m4 = FinalizeModel(m4);
+
+%% Load SimBiology model
+load(fullfile(current_path, '../Testing/simple_massaction_simbio_model.mat'))
+
+% Test SimBio -> analytic model
+m5 = LoadModelSimBioAnalytic(simbiomodel);
+m5 = FinalizeModel(m5);
+
+% Test SimBio -> massaction model
+m6 = LoadModelSimBioMassAction(simbiomodel);
+m6 = FinalizeModel(m5);
+
+
+##### SOURCE END #####
+--></body></html>

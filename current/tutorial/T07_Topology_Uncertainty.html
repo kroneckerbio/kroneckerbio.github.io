@@ -1,0 +1,374 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>T07 Topology Uncertainty</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-05"><meta name="DC.source" content="T07_Topology_Uncertainty.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>T07 Topology Uncertainty</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Settings</a></li><li><a href="#2">Load topologies</a></li><li><a href="#3">Do one simple experiment for the models to fit to</a></li><li><a href="#4">Define priors</a></li><li><a href="#5">Create prior objectives</a></li><li><a href="#6">Fit all models</a></li><li><a href="#7">Topological probabilities</a></li><li><a href="#8">Optimal experimental design for topology uncertainty</a></li></ul></div><h2>Settings<a name="1"></a></h2><p>Global</p><pre class="codeinput">opts = [];
+opts.UseModelSeeds = false;
+opts.UseModelInputs = false;
+opts.RelTol = 1e-4;
+opts.AbsTol = 1e-8;
+opts.Normalized = true;
+opts.Verbose = 1;
+
+<span class="comment">% Fitting</span>
+opts.LowerBound = 1e-10;
+opts.UpperBound = 1e8;
+opts.TolOptim = 1e-6;
+opts.UseAdjoint = false;
+opts.MaxIter = 200;
+opts.Restart = 0;
+
+<span class="comment">% Topology probability</span>
+opts.NeedFit = false;
+</pre><h2>Load topologies<a name="2"></a></h2><pre class="codeinput">current_path = fileparts(mfilename(<span class="string">'fullpath'</span>));
+
+<span class="comment">% Four models of the One-Step MAPK pathway</span>
+mDKDP = LoadModel(fullfile(current_path, <span class="string">'Ferrell_MAPK_DKDP.txt'</span>));
+mDKPP = LoadModel(fullfile(current_path, <span class="string">'Ferrell_MAPK_DKPP.txt'</span>));
+mPKDP = LoadModel(fullfile(current_path, <span class="string">'Ferrell_MAPK_PKDP.txt'</span>));
+mPKPP = LoadModel(fullfile(current_path, <span class="string">'Ferrell_MAPK_PKPP.txt'</span>));
+
+m = [mDKDP; mDKPP; mPKDP; mPKPP];
+
+nTop = numel(m);
+</pre><h2>Do one simple experiment for the models to fit to<a name="3"></a></h2><pre class="codeinput">opts.populate = true;
+outputs = [1;2;3];
+tF = 100;
+n = 8;
+lintimes = linspace(tF/n,tF,n);
+sd = sdLinear(0.01,0.1);
+
+con = experimentInitialValue(mDKDP, [], [], [], <span class="string">'InitialValueExperiment'</span>);
+
+<span class="comment">% Define measurement structure</span>
+outputlist = vec(repmat(outputs', [numel(lintimes),1]));
+timelist = repmat(lintimes, [numel(outputs),1]);
+
+obs = observationLinearWeightedSumOfSquares(outputlist, timelist, sd, <span class="string">'Fitting Data'</span>);
+
+<span class="comment">% Create test data</span>
+sims = cell(1,nTop);
+<span class="keyword">for</span> i = 1:nTop
+    sims{i} = SimulateSystem(m(i), con, tF);
+<span class="keyword">end</span>
+
+sim = SimulateSystem(m(1), con, obs, opts);
+rand_state = rng(1);
+obj = obs.Objective(sim.measurements);
+rng(rand_state);
+
+clear <span class="string">n</span>
+</pre><pre class="codeoutput">Integrating system for InitialValueExperiment...done.
+Integrating system for InitialValueExperiment...done.
+Integrating system for InitialValueExperiment...done.
+Integrating system for InitialValueExperiment...done.
+Integrating system for InitialValueExperiment...done.
+</pre><h2>Define priors<a name="4"></a></h2><p>Topologies prior is uniform</p><pre class="codeinput">opts.PriorTopology = zeros(nTop,1) + 1/nTop;
+
+<span class="comment">% Parameter prior is a spherical Gaussian</span>
+CI = 100; <span class="comment">% Fold change to 95% CI</span>
+variance = (log(CI)/1.96).^2; <span class="comment">% Log space variance</span>
+
+mux = cell(nTop,1);
+Vx = cell(nTop,1);
+<span class="keyword">for</span> i = 1:nTop
+    <span class="comment">% Mean</span>
+    mux{i} = zeros(m(i).nk,1) + 1e-1;
+
+    <span class="comment">% Variance (normalized with no covariance)</span>
+    Vx{i} = diag(mux{i} .* (zeros(m(i).nk,1) + variance) .* mux{i});
+<span class="keyword">end</span>
+</pre><h2>Create prior objectives<a name="5"></a></h2><pre class="codeinput">objPrior = objectiveZero(nTop);
+<span class="keyword">for</span> i = 1:nTop
+    objPrior(i) = objectiveLogNormalPriorOnKineticParameters(mux{i}, Vx{i});
+<span class="keyword">end</span>
+</pre><h2>Fit all models<a name="6"></a></h2><pre class="codeinput"><span class="keyword">for</span> i = 1:nTop
+    mstart = Update(m(i), zeros(m(i).nk,1) + 1e-1);
+    optsFit = opts;
+    optsFit.UseParams = 1:m(i).nk;
+    optsFit.TolOptim = 1e-1; <span class="comment">% Bad tolerance to make fits finish faster</span>
+    m(i) = FitObjective(mstart, con, [obj; objPrior(i)], optsFit);
+<span class="keyword">end</span>
+
+clear <span class="string">i</span> <span class="string">optsFit</span>
+
+<span class="keyword">return</span> <span class="comment">% Return early because the next step takes too long...</span>
+</pre><pre class="codeoutput">
+                                Max     Line search  Directional  First-order 
+ Iter F-count        f(x)   constraint   steplength   derivative   optimality Procedure 
+    0      1      2964.94       -20.72                                         
+    1      3      82.4724       -20.03       0.0334         -423     9.49e+03   
+    2      5     -50.0936       -19.34       0.0346        -45.4          385   
+    3      7     -101.457       -18.64       0.0358        -46.9          903   
+    4      9     -101.504       -17.95       0.0602        -9.83         43.1   
+
+Local minimum possible. Constraints satisfied.
+
+fmincon stopped because the predicted change in the objective function
+is less than the selected value of the function tolerance and constraints 
+are satisfied to within the selected value of the constraint tolerance.
+
+
+
+No active inequalities.
+
+                                Max     Line search  Directional  First-order 
+ Iter F-count        f(x)   constraint   steplength   derivative   optimality Procedure 
+    0      1      4576.77       -20.72                                         
+    1      3      217.334       -20.03       0.0334         -677     1.82e+04   
+    2      5      -63.622       -19.34       0.0346        -59.9          841   
+    3      7     -102.152       -18.64       0.0358        -48.5          638   
+    4      9     -112.102       -17.95       0.0372        -55.7     1.45e+03  Hessian modified  
+    5     13     -112.199       -17.78      0.00965        -84.9     2.03e+03  Hessian modified  
+    6     24     -112.214       -17.78    -7.62e-05          -94     2.45e+03  Hessian modified  
+    7     35     -112.225       -17.78    -7.61e-05        -96.9     2.48e+03  Hessian modified twice  
+    8     37     -122.571       -17.14       0.0358        -73.8     1.91e+03  Hessian modified twice  
+    9     39      -127.67       -16.45       0.0404         -118      3.4e+03  Hessian modified  
+   10     50     -127.672       -16.45    -8.23e-05         -200     4.89e+03  Hessian modified  
+   11     52     -132.241       -15.76       0.0421         -192     4.72e+03  Hessian modified twice  
+   12     55     -132.312       -15.41        0.022         -218     5.04e+03  Hessian modified  
+
+Local minimum possible. Constraints satisfied.
+
+fmincon stopped because the predicted change in the objective function
+is less than the selected value of the function tolerance and constraints 
+are satisfied to within the selected value of the constraint tolerance.
+
+
+
+No active inequalities.
+
+                                Max     Line search  Directional  First-order 
+ Iter F-count        f(x)   constraint   steplength   derivative   optimality Procedure 
+    0      1      4613.18       -20.72                                         
+    1      3      247.624       -20.03       0.0334         -724     1.91e+04   
+    2      5      -65.958       -19.34       0.0346        -64.6          940   
+    3      7     -100.612       -18.64       0.0358          -46          481   
+    4      9     -106.494       -17.95       0.0372        -52.5     1.46e+03  Hessian modified  
+    5     20     -106.502       -17.95    -7.54e-05        -92.1     2.24e+03  Hessian modified  
+    6     31     -106.512       -17.95    -7.54e-05        -92.9     2.36e+03  Hessian modified twice  
+    7     42     -106.535       -17.95    -7.54e-05        -82.8     2.11e+03  Hessian modified  
+    8     53      -106.54       -17.96    -7.54e-05        -71.7     2.14e+03  Hessian modified  
+    9     64     -106.553       -17.96    -7.54e-05        -75.6     2.32e+03  Hessian modified twice  
+   10     75     -106.564       -17.96     -7.1e-05        -69.5     2.11e+03  Hessian modified twice  
+   11     86     -106.574       -17.96    -6.92e-05        -68.9     2.17e+03  Hessian modified twice  
+   12     97     -106.582       -17.96    -6.92e-05        -69.1      2.2e+03  Hessian modified twice  
+   13    108     -106.585       -17.96    -6.91e-05        -69.4     2.26e+03  Hessian modified twice  
+   14    110     -111.733       -17.33       0.0354        -80.6     1.66e+03  Hessian modified twice  
+   15    121     -111.736       -17.33    -7.81e-05         -148     3.78e+03  Hessian modified  
+   16    132     -111.766       -17.33    -7.81e-05         -149     3.67e+03  Hessian modified twice  
+   17    134     -113.714       -16.64         0.04         -161     3.62e+03  Hessian modified twice  
+   18    136     -114.378       -15.94       0.0417         -305     6.57e+03  Hessian modified  
+
+Local minimum possible. Constraints satisfied.
+
+fmincon stopped because the predicted change in the objective function
+is less than the selected value of the function tolerance and constraints 
+are satisfied to within the selected value of the constraint tolerance.
+
+
+
+No active inequalities.
+
+                                Max     Line search  Directional  First-order 
+ Iter F-count        f(x)   constraint   steplength   derivative   optimality Procedure 
+    0      1      3371.77       -20.72                                         
+    1      3      60.7116       -20.03       0.0334         -577     1.38e+04   
+    2      5     -90.8266       -19.34       0.0346        -47.5          535   
+    3      7     -119.803       -18.64       0.0358        -39.3          537   
+    4      9     -133.712       -17.95       0.0372          -43          871  Hessian modified  
+    5     11     -133.848       -17.59       0.0354        -10.5         60.5   
+
+Local minimum possible. Constraints satisfied.
+
+fmincon stopped because the predicted change in the objective function
+is less than the selected value of the function tolerance and constraints 
+are satisfied to within the selected value of the constraint tolerance.
+
+
+
+No active inequalities.
+</pre><h2>Topological probabilities<a name="7"></a></h2><pre class="codeinput">optsTop = opts;
+optsTop.UseParams = {1:m(1).nk; 1:m(2).nk; 1:m(3).nk; 1:m(4).nk};
+pmy = TopologyProbability(m, con, obj, objPrior, [], [], optsTop);
+</pre><h2>Optimal experimental design for topology uncertainty<a name="8"></a></h2><pre class="codeinput">target = @entropy;
+[best, data] = BestTopologyExperiment(m, con, obj, objPrior, [], [], [], [con;con], [obj,obj], target, optsTop);
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% T07 Topology Uncertainty
+
+%% Settings
+% Global
+opts = [];
+opts.UseModelSeeds = false;
+opts.UseModelInputs = false;
+opts.RelTol = 1e-4;
+opts.AbsTol = 1e-8;
+opts.Normalized = true;
+opts.Verbose = 1;
+
+% Fitting
+opts.LowerBound = 1e-10;
+opts.UpperBound = 1e8;
+opts.TolOptim = 1e-6;
+opts.UseAdjoint = false;
+opts.MaxIter = 200;
+opts.Restart = 0;
+
+% Topology probability
+opts.NeedFit = false;
+
+%% Load topologies
+current_path = fileparts(mfilename('fullpath'));
+
+% Four models of the One-Step MAPK pathway
+mDKDP = LoadModel(fullfile(current_path, 'Ferrell_MAPK_DKDP.txt'));
+mDKPP = LoadModel(fullfile(current_path, 'Ferrell_MAPK_DKPP.txt'));
+mPKDP = LoadModel(fullfile(current_path, 'Ferrell_MAPK_PKDP.txt'));
+mPKPP = LoadModel(fullfile(current_path, 'Ferrell_MAPK_PKPP.txt'));
+
+m = [mDKDP; mDKPP; mPKDP; mPKPP];
+
+nTop = numel(m);
+
+%% Do one simple experiment for the models to fit to
+opts.populate = true;
+outputs = [1;2;3];
+tF = 100;
+n = 8;
+lintimes = linspace(tF/n,tF,n);
+sd = sdLinear(0.01,0.1);
+
+con = experimentInitialValue(mDKDP, [], [], [], 'InitialValueExperiment');
+
+% Define measurement structure
+outputlist = vec(repmat(outputs', [numel(lintimes),1]));
+timelist = repmat(lintimes, [numel(outputs),1]);
+
+obs = observationLinearWeightedSumOfSquares(outputlist, timelist, sd, 'Fitting Data');
+
+% Create test data
+sims = cell(1,nTop);
+for i = 1:nTop
+    sims{i} = SimulateSystem(m(i), con, tF);
+end
+
+sim = SimulateSystem(m(1), con, obs, opts);
+rand_state = rng(1);
+obj = obs.Objective(sim.measurements);
+rng(rand_state);
+
+clear n
+
+%% Define priors
+% Topologies prior is uniform
+opts.PriorTopology = zeros(nTop,1) + 1/nTop;
+
+% Parameter prior is a spherical Gaussian
+CI = 100; % Fold change to 95% CI
+variance = (log(CI)/1.96).^2; % Log space variance
+
+mux = cell(nTop,1);
+Vx = cell(nTop,1);
+for i = 1:nTop
+    % Mean
+    mux{i} = zeros(m(i).nk,1) + 1e-1;
+    
+    % Variance (normalized with no covariance)
+    Vx{i} = diag(mux{i} .* (zeros(m(i).nk,1) + variance) .* mux{i});
+end
+
+%% Create prior objectives
+objPrior = objectiveZero(nTop);
+for i = 1:nTop
+    objPrior(i) = objectiveLogNormalPriorOnKineticParameters(mux{i}, Vx{i});
+end
+
+%% Fit all models
+for i = 1:nTop
+    mstart = Update(m(i), zeros(m(i).nk,1) + 1e-1);
+    optsFit = opts;
+    optsFit.UseParams = 1:m(i).nk;
+    optsFit.TolOptim = 1e-1; % Bad tolerance to make fits finish faster
+    m(i) = FitObjective(mstart, con, [obj; objPrior(i)], optsFit);
+end
+
+clear i optsFit
+
+return % Return early because the next step takes too long...
+
+%% Topological probabilities
+optsTop = opts;
+optsTop.UseParams = {1:m(1).nk; 1:m(2).nk; 1:m(3).nk; 1:m(4).nk};
+pmy = TopologyProbability(m, con, obj, objPrior, [], [], optsTop);
+
+%% Optimal experimental design for topology uncertainty
+target = @entropy;
+[best, data] = BestTopologyExperiment(m, con, obj, objPrior, [], [], [], [con;con], [obj,obj], target, optsTop);
+
+##### SOURCE END #####
+--></body></html>

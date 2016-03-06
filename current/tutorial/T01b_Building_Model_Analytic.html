@@ -1,0 +1,373 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>T01b Building an Analytic Model</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-05"><meta name="DC.source" content="T01b_Building_Model_Analytic.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>T01b Building an Analytic Model</h1><!--introduction--><p>Build an analytic model, demonstrating different ways of calling the   component-adding functions. Analytic models are more general than massaction models, allowing rates as   arbitrary functions of states, inputs, and parameters; outputs as arbitray   functions of states, inputs, and parameters; and initial conditions as   arbitrary functions of seeds.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Initialize Model</a></li><li><a href="#2">Add Compartments</a></li><li><a href="#3">Add Seeds</a></li><li><a href="#4">Add States</a></li><li><a href="#5">Add Inputs</a></li><li><a href="#6">Add Parameters</a></li><li><a href="#7">Add Outputs</a></li><li><a href="#8">Add Reactions</a></li><li><a href="#9">Finalize Model</a></li></ul></div><h2>Initialize Model<a name="1"></a></h2><pre class="codeinput">m = InitializeModelAnalytic(<span class="string">'TestAnalyticModel'</span>);
+</pre><h2>Add Compartments<a name="2"></a></h2><pre class="codeinput">m = AddCompartment(m, <span class="string">'v1'</span>, 3, 1);
+m = AddCompartment(m, <span class="string">'v2'</span>, 3, 1);
+m = AddCompartment(m, <span class="string">'v3'</span>, 2, 1);
+m = AddCompartment(m, <span class="string">'v4'</span>, 1, 1);
+m = AddCompartment(m, <span class="string">'v5'</span>, 0, 1);
+</pre><h2>Add Seeds<a name="3"></a></h2><pre class="codeinput">m = AddSeed(m, <span class="string">'s1'</span>, 5);
+m = AddSeed(m, <span class="string">'s2'</span>, 3);
+m = AddSeed(m, <span class="string">'s3:s4'</span>, 4);
+</pre><h2>Add States<a name="4"></a></h2><p>Demonstrate initial conditions as arbitrary expressions</p><pre class="codeinput">m = AddState(m, <span class="string">'x0'</span>, <span class="string">'v1'</span>, 1);
+m = AddState(m, <span class="string">'x0'</span>, <span class="string">'v2'</span>, <span class="string">'2*s1 + 1.5^("s3:s4")'</span>);
+m = AddState(m, <span class="string">'x1'</span>, <span class="string">'v1'</span>);
+m = AddState(m, <span class="string">'x2'</span>, <span class="string">'v1'</span>, 10);
+m = AddState(m, <span class="string">'x3'</span>, <span class="string">'v1'</span>, 0);
+m = AddState(m, <span class="string">'x4'</span>, <span class="string">'v1'</span>, <span class="string">'s1'</span>);
+m = AddState(m, <span class="string">'x5'</span>, <span class="string">'v1'</span>, <span class="string">'2*s1 + 1.5^(s2)'</span>);
+</pre><h2>Add Inputs<a name="5"></a></h2><pre class="codeinput">m = AddInput(m, <span class="string">'u1'</span>, <span class="string">'v1'</span>, 1);
+m = AddInput(m, <span class="string">'u2'</span>, <span class="string">'v1'</span>, 2);
+m = AddInput(m, <span class="string">'u3'</span>, <span class="string">'v1'</span>, 3);
+m = AddInput(m, <span class="string">'u4'</span>, <span class="string">'v1'</span>, 4);
+</pre><h2>Add Parameters<a name="6"></a></h2><pre class="codeinput">m = AddParameter(m, <span class="string">'k1'</span>, 1);
+m = AddParameter(m, <span class="string">'k2'</span>, 2);
+m = AddParameter(m, <span class="string">'k3'</span>, 3);
+m = AddParameter(m, <span class="string">'k4'</span>, 4);
+</pre><h2>Add Outputs<a name="7"></a></h2><p>Demonstrate outputs as arbitrary expressions</p><pre class="codeinput">m = AddOutput(m, <span class="string">'y1'</span>, <span class="string">'x1'</span>);
+m = AddOutput(m, <span class="string">'y2'</span>, <span class="string">'2*x1 + 3.5*x2'</span>);
+m = AddOutput(m, <span class="string">'y3'</span>, <span class="string">'k1*x1'</span>);
+m = AddOutput(m, <span class="string">'y4'</span>, <span class="string">'exp(k2*x2)'</span>);
+m = AddOutput(m, <span class="string">'y5'</span>, <span class="string">'v1.x0'</span>);
+m = AddOutput(m, <span class="string">'y6'</span>, <span class="string">'v2.x0'</span>);
+</pre><h2>Add Reactions<a name="8"></a></h2><p>Demonstrate rates as arbitrary expressions</p><pre class="codeinput">m = AddReaction(m, <span class="string">'r00'</span>, <span class="string">'x1'</span>, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1*x5'</span>);
+m = AddReaction(m, <span class="string">'r01'</span>, <span class="string">'x1'</span>, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1 + k2'</span>);
+m = AddReaction(m, <span class="string">'r02'</span>, <span class="string">'x1'</span>, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1/(k2^2 + x1^2)'</span>);
+m = AddReaction(m, <span class="string">'r03'</span>, <span class="string">'x1'</span>, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1*x0/(k2^2 + u2^2)'</span>, <span class="string">''</span>, <span class="string">'v1'</span>);
+m = AddReaction(m, <span class="string">'r04'</span>, <span class="string">'x1'</span>, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1*v1.x0/(k2^2 + u2^2)'</span>);
+m = AddReaction(m, <span class="string">'r05'</span>, <span class="string">'x1'</span>, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1*v1.x0/(k2^2 + u2^2)'</span>, <span class="string">''</span>, <span class="string">'v1'</span>);
+m = AddReaction(m, <span class="string">'r06'</span>, <span class="string">'x1'</span>, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'exp(k1 + 1.4*u3)'</span>);
+m = AddReaction(m, <span class="string">'r1'</span>, {}, {}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r2'</span>, {}, <span class="string">'x3'</span>, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r3'</span>, {}, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r4'</span>, {}, {<span class="string">'u3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r5'</span>, {}, {<span class="string">'u3'</span>, <span class="string">'u4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r6'</span>, {}, <span class="string">'u3'</span>, <span class="string">'k1'</span>);
+
+m = AddReaction(m, <span class="string">'r7'</span>, <span class="string">'x1'</span>, {}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r8'</span>, <span class="string">'x1'</span>, <span class="string">'x3'</span>, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r9'</span>, <span class="string">'x1'</span>, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r10'</span>, <span class="string">'x1'</span>, {<span class="string">'u3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r11'</span>, <span class="string">'x1'</span>, {<span class="string">'u3'</span>, <span class="string">'u4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r12'</span>, <span class="string">'x1'</span>, <span class="string">'u3'</span>, <span class="string">'k1'</span>);
+
+m = AddReaction(m, <span class="string">'r13'</span>, {<span class="string">'x1'</span>, <span class="string">'x2'</span>}, {}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r14'</span>, {<span class="string">'x1'</span>, <span class="string">'x2'</span>}, <span class="string">'x3'</span>, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r15'</span>, {<span class="string">'x1'</span>, <span class="string">'x2'</span>}, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r16'</span>, {<span class="string">'x1'</span>, <span class="string">'x2'</span>}, {<span class="string">'u3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r17'</span>, {<span class="string">'x1'</span>, <span class="string">'x2'</span>}, {<span class="string">'u3'</span>, <span class="string">'u4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r18'</span>, {<span class="string">'x1'</span>, <span class="string">'x2'</span>}, <span class="string">'u3'</span>, <span class="string">'k1'</span>);
+
+m = AddReaction(m, <span class="string">'r19'</span>, {<span class="string">'x1'</span>, <span class="string">'u2'</span>}, {}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r20'</span>, {<span class="string">'x1'</span>, <span class="string">'u2'</span>}, <span class="string">'x3'</span>, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r21'</span>, {<span class="string">'x1'</span>, <span class="string">'u2'</span>}, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r22'</span>, {<span class="string">'x1'</span>, <span class="string">'u2'</span>}, {<span class="string">'u3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r23'</span>, {<span class="string">'x1'</span>, <span class="string">'u2'</span>}, {<span class="string">'u3'</span>, <span class="string">'u4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r24'</span>, {<span class="string">'x1'</span>, <span class="string">'u2'</span>}, <span class="string">'u3'</span>, <span class="string">'k1'</span>);
+
+m = AddReaction(m, <span class="string">'r25'</span>, {<span class="string">'u1'</span>, <span class="string">'u2'</span>}, {}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r26'</span>, {<span class="string">'u1'</span>, <span class="string">'u2'</span>}, <span class="string">'x3'</span>, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r27'</span>, {<span class="string">'u1'</span>, <span class="string">'u2'</span>}, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r28'</span>, {<span class="string">'u1'</span>, <span class="string">'u2'</span>}, {<span class="string">'u3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r29'</span>, {<span class="string">'u1'</span>, <span class="string">'u2'</span>}, {<span class="string">'u3'</span>, <span class="string">'u4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r30'</span>, {<span class="string">'u1'</span>, <span class="string">'u2'</span>}, <span class="string">'u3'</span>, <span class="string">'k1'</span>);
+
+m = AddReaction(m, <span class="string">'r31'</span>, <span class="string">'u2'</span>, {}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r32'</span>, <span class="string">'u2'</span>, <span class="string">'x3'</span>, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r33'</span>, <span class="string">'u2'</span>, {<span class="string">'x3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r34'</span>, <span class="string">'u2'</span>, {<span class="string">'u3'</span>, <span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r35'</span>, <span class="string">'u2'</span>, {<span class="string">'u3'</span>, <span class="string">'u4'</span>}, <span class="string">'k1'</span>);
+m = AddReaction(m, <span class="string">'r36'</span>, <span class="string">'u2'</span>, <span class="string">'u3'</span>, <span class="string">'k1'</span>);
+
+<span class="comment">% Demonstrates reaction compartment</span>
+m = AddReaction(m, <span class="string">'r37'</span>, <span class="string">'x1'</span>, {<span class="string">'x1'</span>, <span class="string">'x1'</span>}, <span class="string">'k1*x1'</span>, <span class="string">''</span>, <span class="string">'v1'</span>);
+
+<span class="comment">% Demonstrate reaction with &gt; 2 reactants/products</span>
+m = AddReaction(m, <span class="string">'r38'</span>, {<span class="string">'x1'</span>,<span class="string">'u1'</span>}, {<span class="string">'x2'</span>,<span class="string">'x3'</span>,<span class="string">'x4'</span>}, <span class="string">'k1'</span>);
+
+<span class="comment">% Currently, analytic models don't warn and ignore identical reactions</span>
+m = AddReaction(m, <span class="string">'r22'</span>, {<span class="string">'x1'</span>, <span class="string">'u2'</span>}, {<span class="string">'x4'</span>, <span class="string">'u3'</span>}, <span class="string">'k1'</span>);
+</pre><h2>Finalize Model<a name="9"></a></h2><pre class="codeinput">opts = [];
+opts.Verbose = 2;
+m = FinalizeModel(m, opts);
+</pre><pre class="codeoutput">
+Calculating drdx...Done.
+Calculating drdu...Done.
+Calculating drdk...Done.
+Calculating dfdx...Done.
+Calculating dfdu...Done.
+Calculating dfdk...Done.
+Calculating dydx...Done.
+Calculating dydu...Done.
+Calculating dydk...Done.
+Calculating dx0ds...Done.
+Calculating dx0k...Done.
+Calculating d2rdx2...Done.
+Calculating d2rdu2...Done.
+Calculating d2rdxdu...Done.
+Calculating d2rdudx...Done.
+Calculating d2rdk2...Done.
+Calculating d2rdkdx...Done.
+Calculating d2rdkdu...Done.
+Calculating d2rdxdk...Done.
+Calculating d2rdudk...Done.
+Calculating d2fdx2...Done.
+Calculating d2fdu2...Done.
+Calculating d2fdxdu...Done.
+Calculating d2fdudx...Done.
+Calculating d2fdk2...Done.
+Calculating d2fdkdx...Done.
+Calculating d2fdkdu...Done.
+Calculating d2fdxdk...Done.
+Calculating d2fdudk...Done.
+Calculating d2ydx2...Done.
+Calculating d2ydu2...Done.
+Calculating d2ydk2...Done.
+Calculating d2ydudx...Done.
+Calculating d2ydkdx...Done.
+Calculating d2ydxdu...Done.
+Calculating d2ydkdu...Done.
+Calculating d2ydxdk...Done.
+Calculating d2ydudk...Done.
+Calculating d2x0ds2...Done.
+Calculating d2x0dk2...Done.
+Calculating d2x0dkds...Done.
+Calculating d2x0dsdk...Done.
+Converting symbolics to functions...
+f...Done.
+r...Done.
+y...Done.
+x...Done.
+dfdx...Done.
+dfdu...Done.
+dfdk...Done.
+drdx...Done.
+drdu...Done.
+drdk...Done.
+dydx...Done.
+dydu...Done.
+dydk...Done.
+dxds...Done.
+dxdk...Done.
+d2fdx2...Done.
+d2fdu2...Done.
+d2fdk2...Done.
+d2fdxdu...Done.
+d2fdudx...Done.
+d2fdxdk...Done.
+d2fdkdx...Done.
+d2fdudk...Done.
+d2fdkdu...Done.
+d2rdx2...Done.
+d2rdu2...Done.
+d2rdudx...Done.
+d2rdxdu...Done.
+d2rdk2...Done.
+d2rdxdk...Done.
+d2rdudk...Done.
+d2rdkdx...Done.
+d2rdkdu...Done.
+d2ydx2...Done.
+d2ydu2...Done.
+d2ydk2...Done.
+d2ydxdu...Done.
+d2ydxdk...Done.
+d2ydudx...Done.
+d2ydudk...Done.
+d2ydkdx...Done.
+d2ydkdu...Done.
+d2xds2...Done.
+d2xdk2...Done.
+d2xdsdk...Done.
+d2xdkds...Done.
+   ...done.
+done.
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% T01b Building an Analytic Model
+% Build an analytic model, demonstrating different ways of calling the
+%   component-adding functions.
+% Analytic models are more general than massaction models, allowing rates as
+%   arbitrary functions of states, inputs, and parameters; outputs as arbitray
+%   functions of states, inputs, and parameters; and initial conditions as
+%   arbitrary functions of seeds.
+
+%% Initialize Model
+m = InitializeModelAnalytic('TestAnalyticModel');
+
+%% Add Compartments
+m = AddCompartment(m, 'v1', 3, 1);
+m = AddCompartment(m, 'v2', 3, 1);
+m = AddCompartment(m, 'v3', 2, 1);
+m = AddCompartment(m, 'v4', 1, 1);
+m = AddCompartment(m, 'v5', 0, 1);
+
+%% Add Seeds
+m = AddSeed(m, 's1', 5);
+m = AddSeed(m, 's2', 3);
+m = AddSeed(m, 's3:s4', 4);
+
+%% Add States
+% Demonstrate initial conditions as arbitrary expressions
+m = AddState(m, 'x0', 'v1', 1);
+m = AddState(m, 'x0', 'v2', '2*s1 + 1.5^("s3:s4")');
+m = AddState(m, 'x1', 'v1');
+m = AddState(m, 'x2', 'v1', 10);
+m = AddState(m, 'x3', 'v1', 0);
+m = AddState(m, 'x4', 'v1', 's1');
+m = AddState(m, 'x5', 'v1', '2*s1 + 1.5^(s2)');
+
+%% Add Inputs
+m = AddInput(m, 'u1', 'v1', 1);
+m = AddInput(m, 'u2', 'v1', 2);
+m = AddInput(m, 'u3', 'v1', 3);
+m = AddInput(m, 'u4', 'v1', 4);
+
+%% Add Parameters
+m = AddParameter(m, 'k1', 1);
+m = AddParameter(m, 'k2', 2);
+m = AddParameter(m, 'k3', 3);
+m = AddParameter(m, 'k4', 4);
+
+%% Add Outputs
+% Demonstrate outputs as arbitrary expressions
+m = AddOutput(m, 'y1', 'x1');
+m = AddOutput(m, 'y2', '2*x1 + 3.5*x2');
+m = AddOutput(m, 'y3', 'k1*x1');
+m = AddOutput(m, 'y4', 'exp(k2*x2)');
+m = AddOutput(m, 'y5', 'v1.x0');
+m = AddOutput(m, 'y6', 'v2.x0');
+
+%% Add Reactions
+% Demonstrate rates as arbitrary expressions
+m = AddReaction(m, 'r00', 'x1', {'x3', 'x4'}, 'k1*x5');
+m = AddReaction(m, 'r01', 'x1', {'x3', 'x4'}, 'k1 + k2');
+m = AddReaction(m, 'r02', 'x1', {'x3', 'x4'}, 'k1/(k2^2 + x1^2)');
+m = AddReaction(m, 'r03', 'x1', {'x3', 'x4'}, 'k1*x0/(k2^2 + u2^2)', '', 'v1');
+m = AddReaction(m, 'r04', 'x1', {'x3', 'x4'}, 'k1*v1.x0/(k2^2 + u2^2)');
+m = AddReaction(m, 'r05', 'x1', {'x3', 'x4'}, 'k1*v1.x0/(k2^2 + u2^2)', '', 'v1');
+m = AddReaction(m, 'r06', 'x1', {'x3', 'x4'}, 'exp(k1 + 1.4*u3)');
+m = AddReaction(m, 'r1', {}, {}, 'k1');
+m = AddReaction(m, 'r2', {}, 'x3', 'k1');
+m = AddReaction(m, 'r3', {}, {'x3', 'x4'}, 'k1');
+m = AddReaction(m, 'r4', {}, {'u3', 'x4'}, 'k1');
+m = AddReaction(m, 'r5', {}, {'u3', 'u4'}, 'k1');
+m = AddReaction(m, 'r6', {}, 'u3', 'k1');
+
+m = AddReaction(m, 'r7', 'x1', {}, 'k1');
+m = AddReaction(m, 'r8', 'x1', 'x3', 'k1');
+m = AddReaction(m, 'r9', 'x1', {'x3', 'x4'}, 'k1');
+m = AddReaction(m, 'r10', 'x1', {'u3', 'x4'}, 'k1');
+m = AddReaction(m, 'r11', 'x1', {'u3', 'u4'}, 'k1');
+m = AddReaction(m, 'r12', 'x1', 'u3', 'k1');
+
+m = AddReaction(m, 'r13', {'x1', 'x2'}, {}, 'k1');
+m = AddReaction(m, 'r14', {'x1', 'x2'}, 'x3', 'k1');
+m = AddReaction(m, 'r15', {'x1', 'x2'}, {'x3', 'x4'}, 'k1');
+m = AddReaction(m, 'r16', {'x1', 'x2'}, {'u3', 'x4'}, 'k1');
+m = AddReaction(m, 'r17', {'x1', 'x2'}, {'u3', 'u4'}, 'k1');
+m = AddReaction(m, 'r18', {'x1', 'x2'}, 'u3', 'k1');
+
+m = AddReaction(m, 'r19', {'x1', 'u2'}, {}, 'k1');
+m = AddReaction(m, 'r20', {'x1', 'u2'}, 'x3', 'k1');
+m = AddReaction(m, 'r21', {'x1', 'u2'}, {'x3', 'x4'}, 'k1');
+m = AddReaction(m, 'r22', {'x1', 'u2'}, {'u3', 'x4'}, 'k1');
+m = AddReaction(m, 'r23', {'x1', 'u2'}, {'u3', 'u4'}, 'k1');
+m = AddReaction(m, 'r24', {'x1', 'u2'}, 'u3', 'k1');
+
+m = AddReaction(m, 'r25', {'u1', 'u2'}, {}, 'k1');
+m = AddReaction(m, 'r26', {'u1', 'u2'}, 'x3', 'k1');
+m = AddReaction(m, 'r27', {'u1', 'u2'}, {'x3', 'x4'}, 'k1');
+m = AddReaction(m, 'r28', {'u1', 'u2'}, {'u3', 'x4'}, 'k1');
+m = AddReaction(m, 'r29', {'u1', 'u2'}, {'u3', 'u4'}, 'k1');
+m = AddReaction(m, 'r30', {'u1', 'u2'}, 'u3', 'k1');
+
+m = AddReaction(m, 'r31', 'u2', {}, 'k1');
+m = AddReaction(m, 'r32', 'u2', 'x3', 'k1');
+m = AddReaction(m, 'r33', 'u2', {'x3', 'x4'}, 'k1');
+m = AddReaction(m, 'r34', 'u2', {'u3', 'x4'}, 'k1');
+m = AddReaction(m, 'r35', 'u2', {'u3', 'u4'}, 'k1');
+m = AddReaction(m, 'r36', 'u2', 'u3', 'k1');
+
+% Demonstrates reaction compartment
+m = AddReaction(m, 'r37', 'x1', {'x1', 'x1'}, 'k1*x1', '', 'v1');
+
+% Demonstrate reaction with > 2 reactants/products
+m = AddReaction(m, 'r38', {'x1','u1'}, {'x2','x3','x4'}, 'k1');
+
+% Currently, analytic models don't warn and ignore identical reactions
+m = AddReaction(m, 'r22', {'x1', 'u2'}, {'x4', 'u3'}, 'k1');
+
+%% Finalize Model
+opts = [];
+opts.Verbose = 2;
+m = FinalizeModel(m, opts);
+
+##### SOURCE END #####
+--></body></html>
